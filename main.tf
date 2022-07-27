@@ -4,6 +4,7 @@ provider "aws" {
 data "aws_eks_cluster" "eks" {
   name = module.roi-eks.cluster_id
 }
+
 data "aws_eks_cluster_auth" "eks" {
   name = module.roi-eks.cluster_id
 }
@@ -45,12 +46,28 @@ module "roi-eks" {
     
   }
   
-  node_groups = {//create  node groups 
-    example = {
-      
-    }
+#   node_groups = {//create  node groups 
+#     example = {
+#       key_name=""
+#       # public_ip ="true"
+#       worker_security_group_id=[data.aws_security_group.VPN.id]
+#     }
+# }
 }
+resource "aws_eks_node_group" "test" {
+  cluster_name    = data.aws_eks_cluster.eks.name
+  remote_access {
+    ec2_ssh_key = "roi-test"
+    # source_security_group_ids = [data.aws_security_group.VPN.id,"109.186.143.144/32"]
+  }
+   scaling_config {
+    desired_size = 3
+    max_size     = 3
+    min_size     = 3
+  }
+  subnet_ids = module.roi-vpc.private_subnets
+  node_role_arn = data.aws_iam_role.node_role.arn
+  
 }
-
 
 

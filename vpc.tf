@@ -49,3 +49,10 @@ resource "aws_security_group" "VPN" {
     ]
   }
 }
+data "aws_security_group" "VPN" {
+  id = aws_security_group.VPN.id
+}
+output "sg" {
+  description = "sg"
+  value       = data.aws_security_group.VPN.id
+  }
